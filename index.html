@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Flappy Kiro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #1a1a2e;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #gameCanvas {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+
+    <script src="js/config.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/kiro.js"></script>
+    <script src="js/pipes.js"></script>
+    <script src="js/collision.js"></script>
+    <script src="js/score.js"></script>
+    <script src="js/background.js"></script>
+    <script src="js/audio.js"></script>
+
+    <script>
+        // Canvas setup and scaling
+        (function () {
+            var canvas = document.getElementById('gameCanvas');
+            var ctx = canvas.getContext('2d');
+
+            // Internal resolution constants
+            var CANVAS_WIDTH = 400;
+            var CANVAS_HEIGHT = 600;
+
+            // Disable image smoothing for pixel-art rendering
+            function disableImageSmoothing() {
+                ctx.imageSmoothingEnabled = false;
+                ctx.mozImageSmoothingEnabled = false;
+                ctx.webkitImageSmoothingEnabled = false;
+                ctx.msImageSmoothingEnabled = false;
+            }
+
+            // Calculate and apply canvas scale to fit viewport while preserving 2:3 aspect ratio
+            function resizeCanvas() {
+                var viewportWidth = window.innerWidth;
+                var viewportHeight = window.innerHeight;
+
+                // Calculate scale: fit within viewport, never scale up beyond native resolution
+                var scaleX = viewportWidth / CANVAS_WIDTH;
+                var scaleY = viewportHeight / CANVAS_HEIGHT;
+                var scale = Math.min(scaleX, scaleY, 1);
+
+                // Apply scaled dimensions via CSS (internal resolution stays 400x600)
+                var displayWidth = Math.floor(CANVAS_WIDTH * scale);
+                var displayHeight = Math.floor(CANVAS_HEIGHT * scale);
+
+                canvas.style.width = displayWidth + 'px';
+                canvas.style.height = displayHeight + 'px';
+
+                // Re-disable image smoothing after any resize (some browsers reset it)
+                disableImageSmoothing();
+            }
+
+            // Initial setup
+            disableImageSmoothing();
+            resizeCanvas();
+
+            // Handle viewport resize with debounce within 100ms
+            var resizeTimeout = null;
+            window.addEventListener('resize', function () {
+                if (resizeTimeout) {
+                    clearTimeout(resizeTimeout);
+                }
+                resizeTimeout = setTimeout(function () {
+                    resizeCanvas();
+                    resizeTimeout = null;
+                }, 16); // ~16ms debounce ensures recalculation well within 100ms
+            });
+
+            // Expose canvas and context globally for game code
+            window.gameCanvas = canvas;
+            window.gameCtx = ctx;
+            window.CANVAS_WIDTH = CANVAS_WIDTH;
+            window.CANVAS_HEIGHT = CANVAS_HEIGHT;
+            window.resizeCanvas = resizeCanvas;
+            window.disableImageSmoothing = disableImageSmoothing;
+        })();
+    </script>
+
+    <script src="js/game.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/input.js"></script>
+    <script src="js/loop.js"></script>
+</body>
+</html>
