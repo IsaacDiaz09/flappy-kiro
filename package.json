@@ -1,0 +1,22 @@
+{
+  "name": "kiro-introduction",
+  "version": "1.0.0",
+  "description": "Initial folder containing support resources for the Flappy Kiro game.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "fast-check": "^3.22.0"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "pure-rand": "^6.1.0"
+  }
+}
