@@ -1,8 +1,6 @@
-# Flappy Kiro
+# Flappy Hermes
 
-A browser-based Flappy Bird clone with a retro 8-bit pixel-art style. Guide Kiro — a friendly ghost character — through an endless series of pipes.
-
-![Flappy Kiro UI](img/example-ui.png)
+A browser-based Flappy Bird clone with a retro 8-bit pixel-art style. Guide Hermes — a flying character inspired by Project Hermes — through an endless series of pipes.
 
 ## How to Run
 
@@ -25,11 +23,17 @@ You can open the file via `file://` protocol (double-click or drag into the brow
 
 ## Objective
 
-Guide Kiro through gaps between pipes without colliding. You earn one point for each pipe pair you pass. Try to beat your high score!
+Guide Hermes through gaps between pipes without colliding. You earn one point for each pipe pair you pass. Try to beat your high score!
 
 ## Project Structure
 
 - `index.html` — Game entry point
 - `js/` — Game logic (physics, rendering, input, state management)
-- `assets/` — Audio files and sprites
-- `img/` — Screenshots and images
+- `assets/` — Audio files and sprites (`hermes_sprite.png`, `jump.wav`, `game_over.wav`)
+- `tests/` — Property-based and unit tests (vitest + fast-check)
+
+## Built With
+
+- HTML5 Canvas (vanilla JavaScript, zero dependencies)
+- Spec-driven development via Kiro
+- Property-based testing for correctness guarantees
