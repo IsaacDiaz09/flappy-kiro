@@ -28,7 +28,7 @@
     }
   };
 
-  kiroSprite.src = 'assets/ghosty.png';
+  kiroSprite.src = 'assets/hermes_sprite.png';
 
   /**
    * Render Kiro with rotation transform.
