@@ -2,6 +2,8 @@
 
 A browser-based Flappy Bird clone with a retro 8-bit pixel-art style. Guide Hermes — a flying character inspired by Project Hermes — through an endless series of pipes.
 
+![Flappy Hermes UI](img/game_start.png)
+
 ## How to Run
 
 No build step or server required. Simply open `index.html` directly in your browser:
