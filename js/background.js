@@ -62,6 +62,105 @@
     gapVariance: 20
   };
 
+  // ============================================================================
+  // Clouds (semi-transparent, slowest layer)
+  // ============================================================================
+
+  /**
+   * Generate procedural cloud elements.
+   * Clouds are elliptical shapes at various heights in the upper sky.
+   * @returns {Array} Array of cloud objects with x, y, width, height
+   */
+  function generateClouds() {
+    var clouds = [];
+    var totalWidth = CANVAS_WIDTH * 2;
+    var x = 0;
+
+    while (x < totalWidth) {
+      var width = 50 + Math.floor(Math.random() * 80);   // 50-130px wide
+      var height = 20 + Math.floor(Math.random() * 25);  // 20-45px tall
+      var y = 30 + Math.floor(Math.random() * (SKY_HEIGHT * 0.4)); // upper 40% of sky
+
+      clouds.push({ x: x, y: y, width: width, height: height });
+      x += width + 40 + Math.floor(Math.random() * 100); // spacing between clouds
+    }
+
+    return clouds;
+  }
+
+  var clouds = generateClouds();
+  var cloudOffsetX = 0;
+  var CLOUD_SPEED_MULTIPLIER = 0.15; // 15% of pipe speed — very slow drift
+
+  /**
+   * Update cloud scroll offset.
+   * @param {number} normalizedDelta - Delta-time normalized (1.0 = one frame at 60fps)
+   */
+  function updateClouds(normalizedDelta) {
+    cloudOffsetX -= PIPE_SPEED * CLOUD_SPEED_MULTIPLIER * normalizedDelta;
+    if (cloudOffsetX <= -CANVAS_WIDTH) {
+      cloudOffsetX += CANVAS_WIDTH;
+    }
+  }
+
+  /**
+   * Render semi-transparent clouds.
+   * Each cloud is drawn as overlapping ellipses for a puffy look.
+   * @param {CanvasRenderingContext2D} ctx - The canvas 2D context
+   */
+  function renderClouds(ctx) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'; // semi-transparent white
+
+    for (var i = 0; i < clouds.length; i++) {
+      var cloud = clouds[i];
+      var drawX = cloud.x + cloudOffsetX;
+
+      // Draw cloud at current position
+      drawCloud(ctx, drawX, cloud.y, cloud.width, cloud.height);
+
+      // Draw wrapped copy for seamless scrolling
+      var wrappedX = drawX + CANVAS_WIDTH;
+      if (wrappedX < CANVAS_WIDTH) {
+        drawCloud(ctx, wrappedX, cloud.y, cloud.width, cloud.height);
+      }
+    }
+
+    ctx.restore();
+  }
+
+  /**
+   * Draw a single cloud as overlapping ellipses for a puffy shape.
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {number} x - Left edge
+   * @param {number} y - Top edge
+   * @param {number} w - Total width
+   * @param {number} h - Total height
+   */
+  function drawCloud(ctx, x, y, w, h) {
+    if (x + w < 0 || x > CANVAS_WIDTH) return; // skip if off-screen
+
+    ctx.beginPath();
+    // Main body (large center ellipse)
+    ctx.ellipse(x + w * 0.5, y + h * 0.6, w * 0.4, h * 0.4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    // Left puff
+    ctx.ellipse(x + w * 0.25, y + h * 0.65, w * 0.25, h * 0.35, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    // Right puff
+    ctx.ellipse(x + w * 0.75, y + h * 0.6, w * 0.28, h * 0.38, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    // Top puff
+    ctx.ellipse(x + w * 0.45, y + h * 0.35, w * 0.22, h * 0.3, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
   // Background layers array (drawn back-to-front)
   var backgroundLayers = [
     {
@@ -84,6 +183,10 @@
    * @param {number} normalizedDelta - Delta-time normalized (1.0 = one frame at 60fps)
    */
   function updateBackground(normalizedDelta) {
+    // Update clouds
+    updateClouds(normalizedDelta);
+
+    // Update parallax layers
     for (var i = 0; i < backgroundLayers.length; i++) {
       var layer = backgroundLayers[i];
       layer.offsetX -= PIPE_SPEED * layer.speedMultiplier * normalizedDelta;
@@ -111,6 +214,9 @@
     // Ground area fill (solid brown)
     ctx.fillStyle = '#8B4513';
     ctx.fillRect(0, SKY_HEIGHT, CANVAS_WIDTH, GROUND_HEIGHT);
+
+    // Draw semi-transparent clouds (between sky and hills)
+    renderClouds(ctx);
 
     // Draw each parallax layer (back-to-front order)
     for (var i = 0; i < backgroundLayers.length; i++) {
